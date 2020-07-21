@@ -2,11 +2,24 @@ from colorama import Fore
 from colorama import Style
 from textwrap import dedent
 
-print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.0")
+LABEL = "Label"
+START = "Start Day"
+T_ID = "ID"
+NOTES = "Notes"
+
+print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.3.0")
 print(f"{Fore.LIGHTBLUE_EX}Made in {Fore.YELLOW}Python{Style.RESET_ALL}")
 print("Remember to be careful when writing a command\n")
 
 tasks = []
+
+
+class Task():
+    def __init__(self, label=None, start_day=None, task_id=None, notes=None):
+        self.label = label
+        self.start_day = start_day
+        self.task_id = task_id
+        self.notes = notes
 
 
 class ScreenSwitch():
@@ -91,33 +104,24 @@ class AddTask(Screen):
         pass
 
     def display(self):
-        global tasks
+        print("Type 'back' to go back to the beginning screen.\n")
 
         print("What is the label of this task?")
-        self.label = input("> ")
+        label = input("> ")
 
         print("When should this task start? (day)")
-        self.start_day = input("> ")
-
-        print("When should this task start? (hour)")
-        self.start_hour = input("> ")
-
-        print("When is the deadline for this task? (day)")
-        self.deadline_day = input("> ")
-
-        print("When is the deadline for this task? (hour)")
-        self.deadline_hour = input("> ")
+        start_day = input("> ")
 
         print("What is the ID for this task?")
-        self.task_id = input("> ")
+        task_id = input("> ")
 
+        print("Any comments to add?")
+        comment = input("> ")
+        
+        task = Task(label, start_day, int(task_id), comment)
+
+        tasks.append(task)
         print("Well done! Task made.\n")
-        tasks.append(self.label)
-        tasks.append(self.start_day)
-        tasks.append(self.start_hour)
-        tasks.append(self.deadline_day)
-        tasks.append(self.deadline_hour)
-        tasks.append(self.task_id)
 
         screen_change.switch_screen(await_cmd)
 
@@ -127,10 +131,32 @@ class DeleteTask(Screen):
         pass
 
     def display(self):
-        print(dedent(
-        f"{Fore.RED}This is currently being implemented. To delete a task quit the app. However, it will delete all tasks.{Style.RESET_ALL}\n"))
+        print("What task do you want to delete?")
+        print(f"{Fore.RED}Remember to insert the ID.{Style.RESET_ALL}")
+
+        while True:
+            task_choice = input("> ")
+            task_id = int(task_choice)
+            task_index = self.find_index(task_id)
+
+            if task_index == -1:
+                print("Task not found\n")
+                break
+
+            tasks.pop(task_index)
+            print("Task deleted.\n")
+            break
 
         screen_change.switch_screen(await_cmd)
+
+    def find_index(self, task_id):
+        i = 0
+        for t in tasks:
+            if t.task_id == task_id:
+                return i
+            i += 1
+        return -1
+
 
 class ShowTasks(Screen):
 
@@ -140,9 +166,9 @@ class ShowTasks(Screen):
     def display(self):
         if len(tasks) > 0:
             print(f"\n{Fore.LIGHTBLUE_EX}Task data will be displayed in the following order:{Style.RESET_ALL}")
-            print(f"Label, day it starts, hour it starts, deadline day, deadline hour and ID\n")
+            print(f"{LABEL:10}{START:10}{T_ID:5}{NOTES}\n")
             for t in tasks:
-                print(t)
+                print(f"{t.label:10}{t.start_day:10}{t.task_id:5}{t.notes}")
             
             print("=" * 10)
             
@@ -158,5 +184,6 @@ add_task = AddTask()
 delete_task = DeleteTask()
 show_task = ShowTasks()
 _help = TaskHelp()
+task = Task()
 screen_change = ScreenSwitch(await_cmd)
 screen_change.display()
