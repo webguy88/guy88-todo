@@ -6,8 +6,9 @@ LABEL = "Label"
 START = "Start Day"
 T_ID = "ID"
 NOTES = "Notes"
+STATUS = "Status"
 
-print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.3.0")
+print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.4.0")
 print(f"{Fore.LIGHTBLUE_EX}Made in {Fore.YELLOW}Python{Style.RESET_ALL}")
 print("Remember to be careful when writing a command\n")
 
@@ -15,11 +16,12 @@ tasks = []
 
 
 class Task():
-    def __init__(self, label=None, start_day=None, task_id=None, notes=None):
+    def __init__(self, label=None, start_day=None, task_id=None, notes=None, status=f"{Fore.RED}incomplete{Style.RESET_ALL}"):
         self.label = label
         self.start_day = start_day
         self.task_id = task_id
         self.notes = notes
+        self.status = status
 
 
 class ScreenSwitch():
@@ -69,6 +71,14 @@ class WaitCommand(Screen):
                 screen_change.switch_screen(delete_task)
                 screen_change.display()
 
+            elif "c" in cmd:
+                screen_change.switch_screen(complete_task)
+                screen_change.display()
+
+            elif "i" in cmd:
+                screen_change.switch_screen(incomplete_task)
+                screen_change.display()
+
             else:
                 print(f"{Fore.RED}Input a command that exists.\n{Style.RESET_ALL}")
 
@@ -93,6 +103,8 @@ class TaskHelp(Screen):
             n - new task
             d - delete task
             s - show tasks
+            c - mark task as complete
+            i - mark task as incomplete
             q / CTRL + C - quit
             """))
 
@@ -104,7 +116,6 @@ class AddTask(Screen):
         pass
 
     def display(self):
-        print("Type 'back' to go back to the beginning screen.\n")
 
         print("What is the label of this task?")
         label = input("> ")
@@ -132,7 +143,7 @@ class DeleteTask(Screen):
 
     def display(self):
         print("What task do you want to delete?")
-        print(f"{Fore.RED}Remember to insert the ID.{Style.RESET_ALL}")
+        print(f"{Fore.RED}Remember to insert an ID.{Style.RESET_ALL}")
 
         while True:
             task_choice = input("> ")
@@ -166,12 +177,13 @@ class ShowTasks(Screen):
     def display(self):
         if len(tasks) > 0:
             print(f"\n{Fore.LIGHTBLUE_EX}Task data will be displayed in the following order:{Style.RESET_ALL}")
-            print(f"{LABEL:10}{START:10}{T_ID:5}{NOTES}\n")
+            print(f"{LABEL:15}{START:13}{T_ID:5}{NOTES:10}\n")
             for t in tasks:
-                print(f"{t.label:10}{t.start_day:10}{t.task_id:5}{t.notes}")
+                print(f"{t.label:15}{t.start_day:10}{t.task_id:5}{t.notes}")
+                print(f"This task is {t.status}")
             
             print("=" * 10)
-            
+
             screen_change.switch_screen(await_cmd)
 
         else:
@@ -179,10 +191,80 @@ class ShowTasks(Screen):
             screen_change.switch_screen(await_cmd)
 
 
+class CompleteTask(Screen):
+    def __init__(self):
+        pass
+
+    def display(self):
+        print("What task will you mark as complete?")
+        print(f"{Fore.RED}Remember to insert an ID.{Style.RESET_ALL}")
+
+        while True:
+            task_choice = input("> ")
+            task_id = int(task_choice)
+            task_index = self.find_index(task_id)
+
+            if task_index == -1:
+                print("Task not found\n")
+                break
+
+            self.set_as_complete(task_index)
+            print("Marked as complete.\n")
+            break
+
+    def find_index(self, task_id):
+        i = 0
+        for t in tasks:
+            if t.task_id == task_id:
+                return i
+            i += 1
+        return -1
+
+    def set_as_complete(self, task_index):
+        task = tasks[task_index]
+        task.status = f"{Fore.GREEN}complete{Style.RESET_ALL}"
+
+
+class IncompleteTask(Screen):
+    def __init__(self):
+        pass
+
+    def display(self):
+        print("What task will you mark as incomplete?")
+        print(f"{Fore.RED}Remember to insert an ID.{Style.RESET_ALL}")
+
+        while True:
+            task_choice = input("> ")
+            task_id = int(task_choice)
+            task_index = self.find_index(task_id)
+
+            if task_index == -1:
+                print("Task not found\n")
+                break
+
+            self.set_as_incomplete(task_index)
+            print("Marked as incomplete.\n")
+            break
+
+    def find_index(self, task_id):
+        i = 0
+        for t in tasks:
+            if t.task_id == task_id:
+                return i
+            i += 1
+        return -1
+
+    def set_as_incomplete(self, task_index):
+        task = tasks[task_index]
+        task.status = f"{Fore.RED}incomplete{Style.RESET_ALL}"
+
+
 await_cmd = WaitCommand()
 add_task = AddTask()
 delete_task = DeleteTask()
 show_task = ShowTasks()
+complete_task = CompleteTask()
+incomplete_task = IncompleteTask()
 _help = TaskHelp()
 task = Task()
 screen_change = ScreenSwitch(await_cmd)
