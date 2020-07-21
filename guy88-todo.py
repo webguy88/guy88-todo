@@ -8,7 +8,7 @@ T_ID = "ID"
 NOTES = "Notes"
 STATUS = "Status"
 
-print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.4.0")
+print(f"{Fore.GREEN}Welcome to guy88-todo{Style.RESET_ALL} v1.4.1")
 print(f"{Fore.LIGHTBLUE_EX}Made in {Fore.YELLOW}Python{Style.RESET_ALL}")
 print("Remember to be careful when writing a command\n")
 
@@ -179,7 +179,7 @@ class ShowTasks(Screen):
             print(f"\n{Fore.LIGHTBLUE_EX}Task data will be displayed in the following order:{Style.RESET_ALL}")
             print(f"{LABEL:15}{START:13}{T_ID:5}{NOTES:10}\n")
             for t in tasks:
-                print(f"{t.label:15}{t.start_day:10}{t.task_id:5}{t.notes}")
+                print(f"{t.label:15}{t.start_day:10}{t.task_id:15}{t.notes}")
                 print(f"This task is {t.status}")
             
             print("=" * 10)
