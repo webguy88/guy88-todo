@@ -1,6 +1,7 @@
 # The guy88-todo app
 ## Warning!
 The source file requires Colorama. If you don't have it, make sure to install it.
+
 To run on Windows it's more likely you'll need the new terminal, as it is ANSI.
 
 What is this app?
